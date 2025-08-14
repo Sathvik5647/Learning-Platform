@@ -9,7 +9,6 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# Security Configuration
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-change-in-production')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///learning_platform.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -20,19 +19,16 @@ csrf = CSRFProtect(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-# Association table for many-to-many relationship between users and badges
 user_badges = db.Table('user_badges',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
     db.Column('badge_id', db.Integer, db.ForeignKey('badge.id'), primary_key=True)
 )
 
-# Association table for user interests
 user_interests = db.Table('user_interests',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
     db.Column('topic_id', db.Integer, db.ForeignKey('topic.id'), primary_key=True)
 )
 
-# Database Models
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False, index=True)
@@ -41,7 +37,6 @@ class User(UserMixin, db.Model):
     is_admin = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # Relationships
     badges = db.relationship('Badge', secondary=user_badges, lazy='subquery',
                            backref=db.backref('users', lazy=True))
     interests = db.relationship('Topic', secondary=user_interests, lazy='subquery',
@@ -101,12 +96,10 @@ class QuizSession(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_active = db.Column(db.Boolean, default=True)
 
-# User Loader for Flask-Login
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# Utility Functions
 def get_user_difficulty(user):
     """Calculate appropriate difficulty based on user score"""
     if user.score < 50:
@@ -142,7 +135,6 @@ def validate_input(data, required_fields):
             errors.append(f'{field.replace("_", " ").title()} is required')
     return errors
 
-# Initialize database with sample data
 def seed_data():
     # Create topics
     if Topic.query.count() == 0:
@@ -158,7 +150,6 @@ def seed_data():
         db.session.bulk_save_objects(topics)
         db.session.commit()
 
-    # Create badges
     if Badge.query.count() == 0:
         badges = [
             Badge(name='Novice', description='Score 50 points', points_required=50),
@@ -168,7 +159,6 @@ def seed_data():
         db.session.bulk_save_objects(badges)
         db.session.commit()
 
-    # Create questions
     if Question.query.count() == 0:
         python_topic = Topic.query.filter_by(name='Python').first()
         math_topic = Topic.query.filter_by(name='Math').first()
@@ -240,7 +230,6 @@ def seed_data():
         db.session.bulk_save_objects(questions)
         db.session.commit()
 
-# Routes
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -248,7 +237,6 @@ def index():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        # Validate input
         required_fields = ['username', 'password', 'confirm_password']
         errors = validate_input(request.form, required_fields)
         
@@ -262,7 +250,7 @@ def signup():
         confirm_password = request.form['confirm_password']
         selected_interests = request.form.getlist('interests')
 
-        # Additional validation
+
         if len(username) < 3:
             flash('Username must be at least 3 characters long!')
             return redirect(url_for('signup'))
@@ -360,7 +348,6 @@ def quiz():
     user = current_user
     session_id = session.get('quiz_session_id')
     
-    # Get or create quiz session
     quiz_session = None
     if session_id:
         quiz_session = QuizSession.query.filter_by(
@@ -480,10 +467,8 @@ def profile():
         selected_interests = request.form.getlist('interests')
         user = current_user
         
-        # Clear current interests
         user.interests.clear()
         
-        # Add new interests
         for interest_name in selected_interests:
             topic = Topic.query.filter_by(name=interest_name).first()
             if topic:
@@ -501,7 +486,6 @@ def leaderboard():
     top_users = User.query.order_by(User.score.desc()).limit(10).all()
     return render_template('leaderboard.html', top_users=top_users)
 
-# Admin Routes
 @app.route('/admin')
 @login_required
 def admin_dashboard():
@@ -583,7 +567,6 @@ def toggle_admin(user_id):
     flash(f'Admin access {status} for {user.username}')
     return redirect(url_for('manage_users'))
 
-# Error handlers
 @app.errorhandler(404)
 def not_found_error(error):
     return render_template('404.html'), 404
@@ -598,7 +581,6 @@ if __name__ == '__main__':
         db.create_all()
         seed_data()
         
-        # Create default admin user if it doesn't exist
         admin = User.query.filter_by(username='Sathvik').first()
         if not admin:
             admin = User(
