@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Learning Platform{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-4">
+            <i class="fas fa-rocket me-3"></i>Welcome to Learning Platform
+        </h1>
+        <p class="lead mb-4">
+            Test your knowledge, earn badges, and climb the leaderboard with our interactive quiz system!
+        </p>
+        {% if not current_user.is_authenticated %}
+            <div class="d-inline-flex gap-3">
+                <a href="{{ url_for('signup') }}" class="btn btn-light btn-lg px-4">
+                    <i class="fas fa-user-plus me-2"></i>Get Started
+                </a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg px-4">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                </a>
+            </div>
+        {% else %}
+            <div class="d-inline-flex gap-3">
+                <a href="{{ url_for('quiz') }}" class="btn btn-light btn-lg px-4">
+                    <i class="fas fa-brain me-2"></i>Start Quiz
+                </a>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light btn-lg px-4">
+                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 card-hover border-0 shadow">
+                <div class="card-body text-center">
+                    <div class="display-1 text-primary mb-3">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3 class="card-title">Interactive Quizzes</h3>
+                    <p class="card-text text-muted">
+                        Test your knowledge across multiple topics with our adaptive quiz system that adjusts to your skill level.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 card-hover border-0 shadow">
+                <div class="card-body text-center">
+                    <div class="display-1 text-success mb-3">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <h3 class="card-title">Earn Badges</h3>
+                    <p class="card-text text-muted">
+                        Unlock achievements and collect badges as you progress through different difficulty levels and topics.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 card-hover border-0 shadow">
+                <div class="card-body text-center">
+                    <div class="display-1 text-warning mb-3">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3 class="card-title">Compete & Learn</h3>
+                    <p class="card-text text-muted">
+                        Climb the leaderboard and compete with other learners while expanding your knowledge base.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if not current_user.is_authenticated %}
+    <div class="row mt-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h2 class="mb-4">Ready to Start Learning?</h2>
+            <p class="lead text-muted mb-4">
+                Join thousands of learners who are already improving their skills with our platform.
+            </p>
+            <a href="{{ url_for('signup') }}" class="btn btn-primary btn-lg px-5">
+                <i class="fas fa-rocket me-2"></i>Create Free Account
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <h2 class="text-center mb-4">Available Topics</h2>
+            <div class="d-flex flex-wrap justify-content-center gap-2">
+                <span class="badge bg-primary fs-6 py-2 px-3">Python</span>
+                <span class="badge bg-success fs-6 py-2 px-3">Mathematics</span>
+                <span class="badge bg-info fs-6 py-2 px-3">Web Development</span>
+                <span class="badge bg-warning text-dark fs-6 py-2 px-3">Data Structures</span>
+                <span class="badge bg-danger fs-6 py-2 px-3">Databases</span>
+                <span class="badge bg-secondary fs-6 py-2 px-3">OOP</span>
+                <span class="badge bg-dark fs-6 py-2 px-3">Artificial Intelligence</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

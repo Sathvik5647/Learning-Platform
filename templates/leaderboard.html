@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}Leaderboard - Learning Platform{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h1 class="display-4"><i class="fas fa-trophy me-3"></i>Leaderboard</h1>
+                <p class="lead">See how you rank among the top learners</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg">
+                <div class="card-header text-center" style="background: linear-gradient(45deg, #FFD700, #FFA500); color: #333;">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-crown me-2"></i>Top Performers
+                    </h3>
+                </div>
+                <div class="card-body p-0">
+                    {% if top_users %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center" style="width: 80px;">Rank</th>
+                                        <th>Username</th>
+                                        <th class="text-center">Score</th>
+                                        <th class="text-center">Badges</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in top_users %}
+                                        <tr class="{% if current_user.is_authenticated and user.id == current_user.id %}table-warning{% endif %}">
+                                            <td class="text-center align-middle">
+                                                {% if loop.index <= 3 %}
+                                                    {% if loop.index == 1 %}
+                                                        <span class="badge" style="background: linear-gradient(45deg, #FFD700, #FFA500); color: #333; font-size: 1.1em;">
+                                                            <i class="fas fa-crown me-1"></i>1st
+                                                        </span>
+                                                    {% elif loop.index == 2 %}
+                                                        <span class="badge" style="background: linear-gradient(45deg, #C0C0C0, #A9A9A9); color: #333; font-size: 1.1em;">
+                                                            <i class="fas fa-medal me-1"></i>2nd
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="badge" style="background: linear-gradient(45deg, #CD7F32, #B8860B); color: white; font-size: 1.1em;">
+                                                            <i class="fas fa-award me-1"></i>3rd
+                                                        </span>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="badge bg-secondary">#{{ loop.index }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="align-middle">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas fa-user-circle fa-2x me-3 text-primary"></i>
+                                                    <div>
+                                                        <strong>{{ user.username }}</strong>
+                                                        {% if current_user.is_authenticated and user.id == current_user.id %}
+                                                            <small class="text-muted d-block">(You)</small>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <span class="badge bg-primary fs-6 px-3 py-2">
+                                                    <i class="fas fa-star me-1"></i>{{ user.score }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                {% if user.badges %}
+                                                    {% for badge in user.badges %}
+                                                        <span class="badge-custom small me-1">
+                                                            <i class="fas fa-certificate me-1"></i>{{ badge.name }}
+                                                        </span>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <span class="text-muted">No badges yet</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-users-slash fa-4x text-muted mb-3"></i>
+                            <h4 class="text-muted">No users found</h4>
+                            <p class="text-muted">Be the first to start learning and claim the top spot!</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Your Position (if logged in and not in top 10) -->
+            {% if current_user.is_authenticated %}
+                {% set user_in_top = namespace(found=false) %}
+                {% for user in top_users %}
+                    {% if user.id == current_user.id %}
+                        {% set user_in_top.found = true %}
+                    {% endif %}
+                {% endfor %}
+                
+                {% if not user_in_top.found %}
+                    <div class="card mt-4 border-warning">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-map-marker-alt me-2"></i>Your Position
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <p class="mb-0">
+                                        <strong>{{ current_user.username }}</strong> - 
+                                        <span class="badge bg-primary">{{ current_user.score }} points</span>
+                                    </p>
+                                    <small class="text-muted">Keep learning to climb the leaderboard!</small>
+                                </div>
+                                <div class="col-md-4 text-md-end">
+                                    <a href="{{ url_for('quiz') }}" class="btn btn-warning">
+                                        <i class="fas fa-brain me-1"></i>Take Quiz
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            <!-- Call to Action -->
+            <div class="text-center mt-4">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('quiz') }}" class="btn btn-primary btn-lg me-3">
+                        <i class="fas fa-brain me-2"></i>Take Quiz
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                {% else %}
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5>Want to join the leaderboard?</h5>
+                            <p class="text-muted mb-3">Sign up now and start your learning journey!</p>
+                            <a href="{{ url_for('signup') }}" class="btn btn-primary me-2">
+                                <i class="fas fa-user-plus me-1"></i>Sign Up
+                            </a>
+                            <a href="{{ url_for('login') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-sign-in-alt me-1"></i>Login
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Stats -->
+    {% if top_users %}
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="card text-center bg-primary text-white">
+                    <div class="card-body">
+                        <i class="fas fa-users fa-2x mb-2"></i>
+                        <h4>{{ top_users|length }}</h4>
+                        <p class="mb-0">Active Learners</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center bg-success text-white">
+                    <div class="card-body">
+                        <i class="fas fa-star fa-2x mb-2"></i>
+                        <h4>{{ top_users[0].score if top_users }}</h4>
+                        <p class="mb-0">Highest Score</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center bg-info text-white">
+                    <div class="card-body">
+                        <i class="fas fa-chart-line fa-2x mb-2"></i>
+                        <h4>{{ (top_users|sum(attribute='score') / top_users|length)|round|int if top_users }}</h4>
+                        <p class="mb-0">Average Score</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Learning Platform{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h1 class="display-4"><i class="fas fa-cog me-3"></i>Admin Dashboard</h1>
+                <p class="lead">Manage your learning platform efficiently</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <!-- Statistics Cards -->
+    <div class="row mb-5">
+        <div class="col-md-3 mb-4">
+            <div class="card bg-primary text-white h-100 card-hover">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-3x mb-3"></i>
+                    <h2 class="card-title">{{ stats.total_users }}</h2>
+                    <p class="card-text">Total Users</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card bg-success text-white h-100 card-hover">
+                <div class="card-body text-center">
+                    <i class="fas fa-question-circle fa-3x mb-3"></i>
+                    <h2 class="card-title">{{ stats.total_questions }}</h2>
+                    <p class="card-text">Total Questions</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card bg-warning text-white h-100 card-hover">
+                <div class="card-body text-center">
+                    <i class="fas fa-clipboard-check fa-3x mb-3"></i>
+                    <h2 class="card-title">{{ stats.total_quiz_attempts }}</h2>
+                    <p class="card-text">Quiz Attempts</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card bg-info text-white h-100 card-hover">
+                <div class="card-body text-center">
+                    <i class="fas fa-tags fa-3x mb-3"></i>
+                    <h2 class="card-title">{{ stats.active_topics }}</h2>
+                    <p class="card-text">Active Topics</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-gradient text-white" style="background: linear-gradient(45deg, #007bff, #6610f2);">
+                    <h5 class="card-title mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <a href="{{ url_for('add_question') }}" class="btn btn-outline-primary w-100 py-3">
+                                <i class="fas fa-plus-circle fa-2x d-block mb-2"></i>
+                                Add New Question
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ url_for('manage_users') }}" class="btn btn-outline-success w-100 py-3">
+                                <i class="fas fa-user-cog fa-2x d-block mb-2"></i>
+                                Manage Users
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ url_for('leaderboard') }}" class="btn btn-outline-warning w-100 py-3">
+                                <i class="fas fa-trophy fa-2x d-block mb-2"></i>
+                                View Leaderboard
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-info w-100 py-3">
+                                <i class="fas fa-chart-line fa-2x d-block mb-2"></i>
+                                User Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-gradient text-white" style="background: linear-gradient(45deg, #28a745, #20c997);">
+                    <h5 class="card-title mb-0"><i class="fas fa-info-circle me-2"></i>System Info</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span><i class="fas fa-server me-2 text-primary"></i>Platform Status</span>
+                        <span class="badge bg-success">Online</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span><i class="fas fa-database me-2 text-info"></i>Database</span>
+                        <span class="badge bg-success">Connected</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-shield-alt me-2 text-warning"></i>Security</span>
+                        <span class="badge bg-success">Protected</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity (if you want to add this feature later) -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-history me-2"></i>Platform Overview</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Welcome to the admin dashboard! Use the quick actions above to manage your learning platform. Monitor user activity, add new questions, and maintain the platform's content.</p>
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        <strong>Tip:</strong> Regularly add new questions to keep users engaged and maintain a diverse question pool across different difficulty levels.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

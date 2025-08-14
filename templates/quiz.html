@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz - Learning Platform{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Progress Bar -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0">
+                            <i class="fas fa-brain me-2 text-primary"></i>Quiz Progress
+                        </h5>
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('quiz_exit') }}" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-times me-1"></i>Exit Quiz
+                            </a>
+                        </div>
+                    </div>
+                    <div class="progress quiz-progress mb-2" style="height: 8px;">
+                        <div class="progress-bar" 
+                             style="width: {{ (progress.current / progress.total * 100)|round }}%">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted">Question {{ progress.current }} of {{ progress.total }}</small>
+                        <small class="text-muted">{{ ((progress.current / progress.total * 100)|round) }}% Complete</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Card -->
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h4 class="card-title mb-0">
+                                <i class="fas fa-question-circle me-2"></i>
+                                {{ question.topic_obj.name }}
+                            </h4>
+                        </div>
+                        <div class="col-auto">
+                            <span class="badge bg-light text-primary">
+                                {% if question.difficulty == 1 %}
+                                    <i class="fas fa-star me-1"></i>Easy
+                                {% elif question.difficulty == 2 %}
+                                    <i class="fas fa-star me-1"></i><i class="fas fa-star me-1"></i>Medium
+                                {% else %}
+                                    <i class="fas fa-star me-1"></i><i class="fas fa-star me-1"></i><i class="fas fa-star me-1"></i>Hard
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('quiz') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <input type="hidden" name="question_id" value="{{ question.id }}">
+                        
+                        <!-- Question Text -->
+                        <div class="mb-4">
+                            <h3 class="question-text mb-3">{{ question.text }}</h3>
+                        </div>
+                        
+                        <!-- Answer Options -->
+                        {% if question.options %}
+                            <div class="mb-4">
+                                <p class="text-muted mb-3">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Select the correct answer:
+                                </p>
+                                {% set options = question.options.split(',') %}
+                                <div class="row g-2">
+                                    {% for option in options %}
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" 
+                                                   type="radio" 
+                                                   name="answer" 
+                                                   value="{{ option.strip() }}" 
+                                                   id="option_{{ loop.index }}"
+                                                   required>
+                                            <label class="form-check-label w-100 p-3 border rounded cursor-pointer option-label" 
+                                                   for="option_{{ loop.index }}">
+                                                <strong>{{ loop.index }}.</strong> {{ option.strip() }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% else %}
+                            <!-- Text Input for Open Questions -->
+                            <div class="mb-4">
+                                <label for="answer" class="form-label">
+                                    <i class="fas fa-edit me-1"></i>
+                                    Your Answer:
+                                </label>
+                                <input type="text" 
+                                       class="form-control form-control-lg" 
+                                       id="answer" 
+                                       name="answer" 
+                                       required 
+                                       autofocus
+                                       placeholder="Type your answer here...">
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-check me-2"></i>Submit Answer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Card Footer with Points Info -->
+                <div class="card-footer bg-light">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <small class="text-muted">
+                                <i class="fas fa-star me-1"></i>
+                                Potential Points: <strong>{{ question.difficulty * 10 }}</strong>
+                            </small>
+                        </div>
+                        <div class="col-auto">
+                            <small class="text-muted">
+                                <i class="fas fa-trophy me-1"></i>
+                                Current Score: <strong>{{ current_user.score }}</strong>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="alert alert-info border-0">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h6 class="alert-heading mb-1">
+                            <i class="fas fa-lightbulb me-2"></i>Quick Tips
+                        </h6>
+                        <small class="mb-0">
+                            • Take your time to read the question carefully
+                            • Higher difficulty questions give more points
+                            • Your quiz adapts to your skill level
+                        </small>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-home me-1"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+    .option-label {
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+    
+    .option-label:hover {
+        background-color: #f8f9fa;
+        border-color: #007bff !important;
+    }
+    
+    .form-check-input:checked + .option-label {
+        background-color: #e3f2fd;
+        border-color: #007bff !important;
+        color: #007bff;
+        font-weight: 500;
+    }
+    
+    .question-text {
+        line-height: 1.6;
+        color: #2c3e50;
+    }
+    
+    .cursor-pointer {
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    // Auto-focus on first option if multiple choice
+    document.addEventListener('DOMContentLoaded', function() {
+        const firstOption = document.querySelector('input[type="radio"]');
+        if (firstOption) {
+            // Add keyboard navigation for options
+            const options = document.querySelectorAll('input[type="radio"]');
+            options.forEach((option, index) => {
+                option.addEventListener('keydown', function(e) {
+                    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                        e.preventDefault();
+                        const nextIndex = (index + 1) % options.length;
+                        options[nextIndex].focus();
+                        options[nextIndex].checked = true;
+                    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        const prevIndex = (index - 1 + options.length) % options.length;
+                        options[prevIndex].focus();
+                        options[prevIndex].checked = true;
+                    }
+                });
+            });
+        }
+    });
+
+    // Prevent accidental form submission
+    let hasAnswered = false;
+    document.querySelector('form').addEventListener('submit', function(e) {
+        if (!hasAnswered) {
+            hasAnswered = true;
+            const submitBtn = document.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+            submitBtn.disabled = true;
+        }
+    });
+</script>
+{% endblock %}

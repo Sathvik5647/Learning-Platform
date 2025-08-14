@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Learning Platform{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Welcome Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white border-0 shadow">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="card-title mb-2">
+                                <i class="fas fa-user-circle me-2"></i>
+                                Welcome back, {{ user.username }}!
+                            </h1>
+                            <p class="card-text lead mb-0">
+                                Ready to continue your learning journey?
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <div class="d-inline-block">
+                                <h3 class="mb-0">
+                                    <i class="fas fa-star me-1"></i>
+                                    {{ user.score }} Points
+                                </h3>
+                                <small class="opacity-75">Total Score</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow card-hover">
+                <div class="card-body text-center">
+                    <div class="display-4 text-info mb-2">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <h3 class="text-info">{{ total_questions }}</h3>
+                    <p class="text-muted mb-0">Questions Answered</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-0 shadow card-hover">
+                <div class="card-body text-center">
+                    <div class="display-4 text-success mb-2">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <h3 class="text-success">{{ accuracy }}%</h3>
+                    <p class="text-muted mb-0">Accuracy Rate</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-0 shadow card-hover">
+                <div class="card-body text-center">
+                    <div class="display-4 text-warning mb-2">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <h3 class="text-warning">{{ user.badges|length }}</h3>
+                    <p class="text-muted mb-0">Badges Earned</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-0 shadow card-hover">
+                <div class="card-body text-center">
+                    <div class="display-4 text-primary mb-2">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 class="text-primary">{{ user.interests|length }}</h3>
+                    <p class="text-muted mb-0">Interests</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Quick Actions -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow h-100">
+                <div class="card-header bg-white border-0">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-bolt me-2 text-primary"></i>Quick Actions
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('quiz') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-brain me-2"></i>Start New Quiz
+                        </a>
+                        <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-user-edit me-2"></i>Edit Profile & Interests
+                        </a>
+                        <a href="{{ url_for('leaderboard') }}" class="btn btn-outline-success">
+                            <i class="fas fa-trophy me-2"></i>View Leaderboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Badges Section -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow h-100">
+                <div class="card-header bg-white border-0">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-medal me-2 text-warning"></i>Your Badges
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if user.badges %}
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            {% for badge in user.badges %}
+                                <span class="badge-custom">
+                                    <i class="fas fa-award me-1"></i>{{ badge.name }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-3">
+                            <i class="fas fa-medal display-1 opacity-25 mb-3"></i>
+                            <p>No badges earned yet!</p>
+                            <small>Keep answering questions to earn your first badge.</small>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Badge Progress -->
+                    <div class="mt-3">
+                        <h6 class="text-muted">Next Badge Progress:</h6>
+                        {% if user.score < 50 %}
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-info" style="width: {{ (user.score / 50 * 100)|round }}%"></div>
+                            </div>
+                            <small class="text-muted">{{ 50 - user.score }} points until Novice badge</small>
+                        {% elif user.score < 150 %}
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-warning" style="width: {{ ((user.score - 50) / 100 * 100)|round }}%"></div>
+                            </div>
+                            <small class="text-muted">{{ 150 - user.score }} points until Intermediate badge</small>
+                        {% elif user.score < 300 %}
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-success" style="width: {{ ((user.score - 150) / 150 * 100)|round }}%"></div>
+                            </div>
+                            <small class="text-muted">{{ 300 - user.score }} points until Expert badge</small>
+                        {% else %}
+                            <p class="text-success"><i class="fas fa-crown me-1"></i>All badges unlocked! You're an expert!</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    {% if recent_history %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-white border-0">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-history me-2 text-info"></i>Recent Quiz History
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Question</th>
+                                    <th>Your Answer</th>
+                                    <th>Result</th>
+                                    <th>Points</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for history in recent_history %}
+                                <tr>
+                                    <td>{{ history.question.text[:50] }}{% if history.question.text|length > 50 %}...{% endif %}</td>
+                                    <td>{{ history.user_answer }}</td>
+                                    <td>
+                                        {% if history.is_correct %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>Correct
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times me-1"></i>Incorrect
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="text-primary fw-bold">+{{ history.points_earned }}</span>
+                                    </td>
+                                    <td class="text-muted">
+                                        {{ history.answered_at.strftime('%m/%d %I:%M %p') }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Interests Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-white border-0">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-heart me-2 text-danger"></i>Your Learning Interests
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if user.interests %}
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for interest in user.interests %}
+                                <span class="badge bg-info fs-6 py-2 px-3">
+                                    {{ interest.name }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-3">
+                            <i class="fas fa-heart display-4 opacity-25 mb-3"></i>
+                            <p>No interests selected yet!</p>
+                            <a href="{{ url_for('profile') }}" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Add Your Interests
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
