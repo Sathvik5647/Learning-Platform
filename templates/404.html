@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found - Learning Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+        <div class="col-md-8 col-lg-6">
+            <div class="text-center">
+                <!-- Error Icon -->
+                <div class="mb-4">
+                    <i class="fas fa-search" style="font-size: 8rem; color: #6c757d; opacity: 0.5;"></i>
+                </div>
+                
+                <!-- Error Message -->
+                <h1 class="display-1 fw-bold text-primary mb-3">404</h1>
+                <h2 class="h3 mb-3">Oops! Page Not Found</h2>
+                <p class="lead text-muted mb-4">
+                    The page you're looking for seems to have wandered off. 
+                    Don't worry, even the best explorers sometimes take a wrong turn!
+                </p>
+                
+                <!-- Action Buttons -->
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                    <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-home me-2"></i>Go Home
+                    </a>
+                    
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                        <a href="{{ url_for('quiz') }}" class="btn btn-outline-success btn-lg">
+                            <i class="fas fa-brain me-2"></i>Take Quiz
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('signup') }}" class="btn btn-outline-success btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Sign Up
+                        </a>
+                    {% endif %}
+                </div>
+                
+                <!-- Helpful Links -->
+                <div class="mt-5 pt-4 border-top">
+                    <h5 class="text-muted mb-3">Maybe you were looking for:</h5>
+                    <div class="row text-center">
+                        {% if current_user.is_authenticated %}
+                            <div class="col-6 col-md-3 mb-3">
+                                <a href="{{ url_for('quiz') }}" class="text-decoration-none">
+                                    <i class="fas fa-brain fa-2x text-success d-block mb-2"></i>
+                                    <small class="text-muted">Quiz</small>
+                                </a>
+                            </div>
+                            <div class="col-6 col-md-3 mb-3">
+                                <a href="{{ url_for('leaderboard') }}" class="text-decoration-none">
+                                    <i class="fas fa-trophy fa-2x text-warning d-block mb-2"></i>
+                                    <small class="text-muted">Leaderboard</small>
+                                </a>
+                            </div>
+                            <div class="col-6 col-md-3 mb-3">
+                                <a href="{{ url_for('profile') }}" class="text-decoration-none">
+                                    <i class="fas fa-user fa-2x text-info d-block mb-2"></i>
+                                    <small class="text-muted">Profile</small>
+                                </a>
+                            </div>
+                            <div class="col-6 col-md-3 mb-3">
+                                <a href="{{ url_for('dashboard') }}" class="text-decoration-none">
+                                    <i class="fas fa-tachometer-alt fa-2x text-primary d-block mb-2"></i>
+                                    <small class="text-muted">Dashboard</small>
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="col-6 mb-3">
+                                <a href="{{ url_for('login') }}" class="text-decoration-none">
+                                    <i class="fas fa-sign-in-alt fa-2x text-primary d-block mb-2"></i>
+                                    <small class="text-muted">Login</small>
+                                </a>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <a href="{{ url_for('signup') }}" class="text-decoration-none">
+                                    <i class="fas fa-user-plus fa-2x text-success d-block mb-2"></i>
+                                    <small class="text-muted">Sign Up</small>
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom animations */
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .fas.fa-search {
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    /* Hover effects for helpful links */
+    .text-decoration-none:hover i {
+        transform: scale(1.1);
+        transition: transform 0.3s ease;
+    }
+</style>
+{% endblock %}
